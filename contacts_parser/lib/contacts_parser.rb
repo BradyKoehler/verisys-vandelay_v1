@@ -1,5 +1,6 @@
 require "contacts_parser/files"
 require "contacts_parser/formatter"
+require "contacts_parser/validator"
 require "contacts_parser/version"
 
 module ContactsParser
@@ -38,6 +39,12 @@ module ContactsParser
       
       # Format the data arrays
       contacts = Formatter::contacts(raw_data[1..])
+
+      # Validate contacts
+      contacts, invalid = Validator::contacts(contacts)
+
+      # Print validation results
+      puts "#{contacts.length} valid, #{invalid.length} invalid"
 
       # Write data to file as JSON
       Files::write(@out_file, contacts)
