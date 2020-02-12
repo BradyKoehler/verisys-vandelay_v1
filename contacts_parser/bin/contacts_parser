@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+require "contacts_parser"
+
+
+
+parser = ContactsParser::Parse.new(ARGV)
+parser.run

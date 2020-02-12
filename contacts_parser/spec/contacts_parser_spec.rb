@@ -3,7 +3,9 @@ RSpec.describe ContactsParser do
     expect(ContactsParser::VERSION).not_to be nil
   end
 
-  it "does something useful" do
-    expect(false).to eq(true)
-  end
+  # it "displays usage info" do
+  #   usage = ContactsParser::usage()
+  # 
+  #   expect(usage.index("Usage")).not_to be nil
+  # end
 end
