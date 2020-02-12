@@ -45,7 +45,7 @@ module ContactsParser
         dates = indices.map { |index| [index, data[index][:last_update]] }
 
         # Order latest to oldest
-        dates.sort_by! { |date| Date.strptime(date[1], "%Y-%m-%d") } .reverse!
+        dates.sort_by! { |date| read_date(date[1]) } .reverse!
 
         # Store merges
         merges[license] = dates.map { |date| Marshal.load(Marshal.dump(data[date[0]])) }
@@ -70,6 +70,15 @@ module ContactsParser
 
       # Return merged records and merge log
       [data, merges]
+    end
+
+    def self.read_date(datestring)
+      if datestring.index("/")
+        datestring = datestring.split("/")
+        datestring = "20#{datestring[2]}-#{datestring[0].rjust(2, "0")}-#{datestring[1].rjust(2, "0")}"
+      end
+
+      Date.strptime(datestring, "%Y-%m-%d")
     end
   end
 end
