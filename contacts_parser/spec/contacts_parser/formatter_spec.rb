@@ -58,8 +58,8 @@ RSpec.describe ContactsParser::Formatter do
         }
       ], 
       :phone_numbers=>[
-        {:number=>"595.802.0435", :type=>"Business"}, 
-        {:number=>"1-109-818-2429", :type=>"Business"}
+        {:number=>"(595) 802-0435", :type=>"Business"}, 
+        {:number=>"(109) 818-2429", :type=>"Business"}
       ]
     }]
 

@@ -54,9 +54,19 @@ module ContactsParser
     # Format phone array as hash
     def self.phone(arr)
       {
-        number: arr[0],
+        number: phone_format(arr[0]),
         type:   arr[1]
       }
+    end
+
+    # Formats a phone number as (###) ###-####
+    def self.phone_format(number)
+      number = number
+        .gsub(/\D/, "") # Replace non-digits
+        .reverse[..9].reverse # Ignore country codes
+      
+      # Format with parentheses and hyphen
+      "(#{number[0..2]}) #{number[3..5]}-#{number[6..9]}"
     end
   end
 end
