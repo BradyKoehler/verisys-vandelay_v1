@@ -35,6 +35,7 @@ module ContactsParser
     # Main function
     def run
       # Get the raw data from the input file
+      puts "Reading file...\n\n"
       raw_data = Files::read(@in_file)
       
       # Format the data arrays
@@ -47,7 +48,14 @@ module ContactsParser
       puts "#{contacts.length} valid, #{invalid.length} invalid"
 
       # Write data to file as JSON
+      puts "\nWriting valid contacts to #{@out_file}"
       Files::write(@out_file, contacts)
+
+      # Display removed records
+      puts "\nThe following records were removed:"
+      invalid.each do |invalid|
+        puts "\t#{invalid[:license] && invalid[:license].length > 0 ? invalid[:license] : "(Missing) "} - #{invalid[:first_name]} #{invalid[:last_name]}"
+      end
     end
   end
 end
