@@ -2,6 +2,7 @@ require "contacts_parser/files"
 require "contacts_parser/formatter"
 require "contacts_parser/validator"
 require "contacts_parser/version"
+require "contacts_parser/server/app"
 
 module ContactsParser
   class Error < StandardError; end

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Vandelay Contacts Parser</title>
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<link rel=stylesheet href=/css/style.css />
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js" integrity="sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm" crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+<div class="container">
+  <div class=row>
+    <div class=col>
+      <h1 class=page-header>Results</h1>
+
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" id="tab-overview" href="#" onclick="tab('overview')">Overview</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="tab-results" href="#" onclick="tab('results')">Results</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="tab-removed" href="#" onclick="tab('removed')">Removed</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="tab-downloads" href="#" onclick="tab('downloads')">Downloads</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row tab-view active" id=row-overview>
+    <div class=col>
+      <p class=lead><%= @contacts.length + @invalid.length %> records processed</p>
+      <p>
+        <span class=text-success><%= @contacts.length %></span> valid, 
+        <span class=text-danger><%= @invalid.length %></span> invalid
+      </p>
+    </div>
+  </div>
+
+  <div class="row tab-view" id=row-results>
+    <div class=col>
+      <table class="table table-sm table-bordered table-responsive">
+        <thead class="thead-dark">
+          <tr>
+            <th rowspan=2>License</th>
+            <th rowspan=2>First Name</th>
+            <th rowspan=2>Middle Name</th>
+            <th rowspan=2>Last Name</th>
+            <th rowspan=2>Last Update</th>
+            <th colspan=5>Addresses</th>
+            <th colspan=2>Phone Numbers</th>
+          </tr>
+          <tr>
+            <th>Line 1</th>
+            <th>Line 2</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip</th>
+            <th>Number</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @contacts.each do |contact| %>
+          <% span = [1, contact[:addresses].length, contact[:phone_numbers].length].max %>
+          <tr>
+            <td rowspan=<%= span %>><%= contact[:license] %></td>
+            <td rowspan=<%= span %>><%= contact[:first_name] %></td>
+            <td rowspan=<%= span %>><%= contact[:middle_name] %></td>
+            <td rowspan=<%= span %>><%= contact[:last_name] %></td>
+            <td rowspan=<%= span %>><%= contact[:last_update] %></td>
+
+            <% span.times do |i| %>
+            <% if i > 0 %><tr><% end %>
+            <td><%= contact[:addresses][i][:line_1] if contact[:addresses][i] %></td>
+            <td><%= contact[:addresses][i][:line_2] if contact[:addresses][i] %></td>
+            <td><%= contact[:addresses][i][:city] if contact[:addresses][i] %></td>
+            <td><%= contact[:addresses][i][:state] if contact[:addresses][i] %></td>
+            <td><%= contact[:addresses][i][:zip] if contact[:addresses][i] %></td>
+            <td><%= contact[:phone_numbers][i][:number] if contact[:phone_numbers][i] %></td>
+            <td><%= contact[:phone_numbers][i][:type] if contact[:phone_numbers][i] %></td>
+            <% if i > 0 %></tr><% end %>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row tab-view" id=row-removed>
+    <div class=col>
+      <table class="table table-sm table-bordered table-responsive">
+        <thead class="thead-dark">
+          <tr>
+            <th rowspan=2>License</th>
+            <th rowspan=2>First Name</th>
+            <th rowspan=2>Middle Name</th>
+            <th rowspan=2>Last Name</th>
+            <th rowspan=2>Last Update</th>
+            <th colspan=5>Addresses</th>
+            <th colspan=2>Phone Numbers</th>
+          </tr>
+          <tr>
+            <th>Line 1</th>
+            <th>Line 2</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip</th>
+            <th>Number</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @invalid.each do |contact| %>
+          <% span = [1, contact[:addresses].length, contact[:phone_numbers].length].max %>
+          <tr>
+            <td rowspan=<%= span %>><%= contact[:license] %></td>
+            <td rowspan=<%= span %>><%= contact[:first_name] %></td>
+            <td rowspan=<%= span %>><%= contact[:middle_name] %></td>
+            <td rowspan=<%= span %>><%= contact[:last_name] %></td>
+            <td rowspan=<%= span %>><%= contact[:last_update] %></td>
+
+            <% span.times do |i| %>
+            <% if i > 0 %><tr><% end %>
+            <td><%= contact[:addresses][i][:line_1] if contact[:addresses][i] %></td>
+            <td><%= contact[:addresses][i][:line_2] if contact[:addresses][i] %></td>
+            <td><%= contact[:addresses][i][:city] if contact[:addresses][i] %></td>
+            <td><%= contact[:addresses][i][:state] if contact[:addresses][i] %></td>
+            <td><%= contact[:addresses][i][:zip] if contact[:addresses][i] %></td>
+            <td><%= contact[:phone_numbers][i][:number] if contact[:phone_numbers][i] %></td>
+            <td><%= contact[:phone_numbers][i][:type] if contact[:phone_numbers][i] %></td>
+            <% if i > 0 %></tr><% end %>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row tab-view" id=row-downloads>
+    <div class=col>
+      <a type=button class="btn btn-primary btn-lg" target=_blank href="/data/<%= @filename %>">Original File (CSV)</a>
+      <a type=button class="btn btn-success btn-lg" target=_blank href="/data/<%= @contact_file %>">Results File (JSON)</a>
+      <a type=button class="btn btn-warning btn-lg" target=_blank href="/data/<%= @invalid_file %>">Invalid Records File (JSON)</a>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+function tab(name) {
+  document.getElementsByClassName(`nav-link active`)[0].classList.remove("active");
+  document.getElementById(`tab-${name}`).classList.add("active");
+
+  document.getElementsByClassName("row tab-view active")[0].classList.remove("active");
+  document.getElementById(`row-${name}`).classList.add("active");
+}
+</script>
+
+</body>
+</html>
