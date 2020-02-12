@@ -1,11 +1,24 @@
+require "contacts_parser/merger"
 require "contacts_parser/files"
 require "contacts_parser/formatter"
 require "contacts_parser/validator"
 require "contacts_parser/version"
-require "contacts_parser/server/app"
 
 module ContactsParser
   class Error < StandardError; end
+
+  # Starts the Sinatra web server
+  def self.server(options = {})
+    # Needs to be loaded here or sinatra overwrites cli arguments
+    load "contacts_parser/server/app.rb"
+
+    # Configure the server
+    ContactsParser::Server.set(:bind, options[:bind]) if options[:bind]
+    ContactsParser::Server.set(:port, options[:port]) if options[:port]
+  
+    # Start the server
+    ContactsParser::Server.run!
+  end
   
   class Parse
 
@@ -45,6 +58,9 @@ module ContactsParser
       # Print validation results
       v_puts "#{contacts.length} valid, #{invalid.length} invalid"
 
+      # Merge duplicates
+      contacts, merges = Merger::contacts(contacts, @options)
+
       # Write data to file as JSON
       v_puts "\nWriting valid contacts to #{@options[:output]}"
       Files::write(@options[:output], contacts)
@@ -56,9 +72,11 @@ module ContactsParser
       end
 
       # Display removed records
-      v_puts "\nThe following records were removed:"
-      invalid.each do |invalid|
-        v_puts "\t#{invalid[:license] && invalid[:license].length > 0 ? invalid[:license] : "(Missing) "} - #{invalid[:first_name]} #{invalid[:last_name]}"
+      if @options[:display_invalid]
+        v_puts "\nThe following records were removed:"
+        invalid.each do |invalid|
+          v_puts "\t#{invalid[:license] && invalid[:license].length > 0 ? invalid[:license] : "(Missing) "} - #{invalid[:first_name]} #{invalid[:last_name]}"
+        end
       end
     end
   end

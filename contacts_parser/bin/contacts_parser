@@ -25,6 +25,10 @@ OptionParser.new do |opts|
     options[:verbose] = true
   end
 
+  opts.on("-di", "--display-invalid", "With `-v`, prints the list of removed records after processing") do
+    options[:display_invalid] = true
+  end
+
   opts.separator "\nServer options: (Note, using the `-s` flag will override any of the above arguments)"
 
   opts.on("-s", "--server", "Enable web server") do
@@ -41,12 +45,7 @@ OptionParser.new do |opts|
 end.parse!
 
 if options[:server]
-  # Configure the server
-  ContactsParser::Server.set(:bind, options[:bind]) if options[:bind]
-  ContactsParser::Server.set(:port, options[:port]) if options[:port]
-
-  # Start the server
-  ContactsParser::Server.run!#(options)
+  ContactsParser.server(options)
 else
   # Verify file settings and execute parser
 

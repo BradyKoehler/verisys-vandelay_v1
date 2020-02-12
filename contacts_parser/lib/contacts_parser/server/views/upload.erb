@@ -28,6 +28,9 @@
           <a class="nav-link" id="tab-removed" href="#" onclick="tab('removed')">Removed</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" id="tab-merges" href="#" onclick="tab('merges')">Merges</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" id="tab-downloads" href="#" onclick="tab('downloads')">Downloads</a>
         </li>
       </ul>
@@ -36,16 +39,22 @@
 
   <div class="row tab-view active" id=row-overview>
     <div class=col>
-      <p class=lead><%= @contacts.length + @invalid.length %> records processed</p>
+      <p class=lead><%= @total_records %> records processed</p>
       <p>
         <span class=text-success><%= @contacts.length %></span> valid, 
         <span class=text-danger><%= @invalid.length %></span> invalid
       </p>
+      <p><span class=text-warning><%= @merges.length %></span> merges made</p>
     </div>
   </div>
 
   <div class="row tab-view" id=row-results>
     <div class=col>
+      <% if @contacts.length > 100 %>
+      <p>To prevent the browser from being overloaded, only the first 100 results are shown.
+        <br />The JSON file (available on the downloads tab) will have the complete set.</p>
+      <% end %>
+
       <table class="table table-sm table-bordered table-responsive">
         <thead class="thead-dark">
           <tr>
@@ -68,7 +77,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @contacts.each do |contact| %>
+          <% @contacts[..99].each do |contact| %>
           <% span = [1, contact[:addresses].length, contact[:phone_numbers].length].max %>
           <tr>
             <td rowspan=<%= span %>><%= contact[:license] %></td>
@@ -96,6 +105,11 @@
 
   <div class="row tab-view" id=row-removed>
     <div class=col>
+      <% if @invalid.length > 100 %>
+      <p>To prevent the browser from being overloaded, only the first 100 invalid records are shown.
+        <br />The JSON file (available on the downloads tab) will have the complete set.</p>
+      <% end %>
+
       <table class="table table-sm table-bordered table-responsive">
         <thead class="thead-dark">
           <tr>
@@ -118,7 +132,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @invalid.each do |contact| %>
+          <% @invalid[..99].each do |contact| %>
           <% span = [1, contact[:addresses].length, contact[:phone_numbers].length].max %>
           <tr>
             <td rowspan=<%= span %>><%= contact[:license] %></td>
@@ -144,11 +158,71 @@
     </div>
   </div>
 
+  <div class="row tab-view" id=row-merges>
+    <div class=col>
+      <% if @merges.length > 100 %>
+      <p>To prevent the browser from being overloaded, only the first 100 merges are shown.
+        <br />The JSON file (available on the downloads tab) will have the complete set.</p>
+      <% end %>
+
+      <table class="table table-sm table-bordered table-responsive">
+        <thead class="thead-dark">
+          <tr>
+            <th rowspan=2>License</th>
+            <th rowspan=2>First Name</th>
+            <th rowspan=2>Middle Name</th>
+            <th rowspan=2>Last Name</th>
+            <th rowspan=2>Last Update</th>
+            <th colspan=5>Addresses</th>
+            <th colspan=2>Phone Numbers</th>
+          </tr>
+          <tr>
+            <th>Line 1</th>
+            <th>Line 2</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip</th>
+            <th>Number</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @merges.each do |license, records| %>
+          <tr class="table-primary">
+            <td rowspan=<%= records.map { |contact| [1, contact[:addresses].length, contact[:phone_numbers].length].max } .sum %>>
+              <%= license %>
+            </td>
+            <% records.each do |contact| %>
+            <% span = [1, contact[:addresses].length, contact[:phone_numbers].length].max %>
+            <td rowspan=<%= span %>><%= contact[:first_name] %></td>
+            <td rowspan=<%= span %>><%= contact[:middle_name] %></td>
+            <td rowspan=<%= span %>><%= contact[:last_name] %></td>
+            <td rowspan=<%= span %>><%= contact[:last_update] %></td>
+
+            <% span.times do |i| %>
+            <% if i > 0 %><tr><% end %>
+            <td><%= contact[:addresses][i][:line_1] if contact[:addresses][i] %></td>
+            <td><%= contact[:addresses][i][:line_2] if contact[:addresses][i] %></td>
+            <td><%= contact[:addresses][i][:city] if contact[:addresses][i] %></td>
+            <td><%= contact[:addresses][i][:state] if contact[:addresses][i] %></td>
+            <td><%= contact[:addresses][i][:zip] if contact[:addresses][i] %></td>
+            <td><%= contact[:phone_numbers][i][:number] if contact[:phone_numbers][i] %></td>
+            <td><%= contact[:phone_numbers][i][:type] if contact[:phone_numbers][i] %></td>
+            <% if i > 0 %></tr><% end %>
+            <% end %>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="row tab-view" id=row-downloads>
     <div class=col>
       <a type=button class="btn btn-primary btn-lg" target=_blank href="/data/<%= @filename %>">Original File (CSV)</a>
       <a type=button class="btn btn-success btn-lg" target=_blank href="/data/<%= @contact_file %>">Results File (JSON)</a>
-      <a type=button class="btn btn-warning btn-lg" target=_blank href="/data/<%= @invalid_file %>">Invalid Records File (JSON)</a>
+      <a type=button class="btn btn-danger btn-lg" target=_blank href="/data/<%= @invalid_file %>">Invalid Records File (JSON)</a>
+      <a type=button class="btn btn-warning btn-lg" target=_blank href="/data/<%= @merges_file %>">Merged Records File (JSON)</a>
     </div>
   </div>
 </div>

@@ -1,4 +1,4 @@
 div.tab-view        { display: none; }
 div.tab-view.active { display: block; }
 div.col             { margin-top: 30px; }
-td                  { white-space: nowrap; }
+th, td              { white-space: nowrap; }
