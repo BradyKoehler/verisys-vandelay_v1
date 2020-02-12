@@ -1,7 +1,41 @@
 #!/usr/bin/env ruby
 require "contacts_parser"
+require "optparse"
 
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: contacts_parser <filename> [options]"
 
+  opts.on("-h", "--help", "Prints this help") do
+    puts opts
+    exit
+  end
 
-parser = ContactsParser::Parse.new(ARGV)
+  opts.on("-i", "--invalid FILE", "Specify a file to write invalid results to") do |file|
+    options[:invalid] = file
+  end
+
+  opts.on("-o FILE", "--output FILE", "Specify the output file") do |file|
+    options[:output] = file
+  end
+
+  opts.on("-v", "--verbose", "Enable verbose output") do
+    options[:verbose] = true
+  end
+end.parse!
+
+# Check for filename
+if ARGV.length == 0
+  puts "No input file provided.\nRun `contacts_parser -h` to see usage details."
+  exit 1
+end
+
+# Get input filename
+options[:input] = ARGV[0]
+
+# Ensure output filename is set
+options[:output] ||= "#{options[:input]}.json"
+
+# Execute program
+parser = ContactsParser::Parse.new(options)
 parser.run

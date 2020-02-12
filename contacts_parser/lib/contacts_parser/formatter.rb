@@ -2,16 +2,18 @@ module ContactsParser
   class Formatter
 
     # Format array of contacts
-    def self.contacts(data)
+    def self.contacts(data, options = {})
       # Prepare for status printing
       padSize = data.length.to_s.length
 
       # Format each contact
       data.map.with_index do |row, index|
         # Print status
-        print "Formatting row #{(index + 1).to_s.rjust(padSize, " ")}/#{data.length}\r#{index == data.length - 1 ? "\n" : ""}"
-        $stdout.flush
-
+        if options[:verbose]
+          print "Formatting row #{(index + 1).to_s.rjust(padSize, " ")}/#{data.length}\r#{index == data.length - 1 ? "\n" : ""}"
+          $stdout.flush
+        end
+        
         # Return formatted contact
         contact(row)
       end

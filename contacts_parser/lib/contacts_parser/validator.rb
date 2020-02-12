@@ -2,7 +2,7 @@ module ContactsParser
   class Validator
 
     # Validates an array of contacts
-    def self.contacts(data)
+    def self.contacts(data, options = {})
       # Hold invalid contacts
       invalid = []
 
@@ -12,8 +12,10 @@ module ContactsParser
       # Use a lambda to utilize "return"
       lambda = ->(contact, index) {
         # Print status
-        print "Validating row #{(index + 1).to_s.rjust(padSize, " ")}/#{data.length}\r#{index == data.length - 1 ? "\n" : ""}"
-        $stdout.flush
+        if options[:verbose]
+          print "Validating row #{(index + 1).to_s.rjust(padSize, " ")}/#{data.length}\r#{index == data.length - 1 ? "\n" : ""}"
+          $stdout.flush
+        end
 
         # Must have a valid license number
         unless license(contact[:license])

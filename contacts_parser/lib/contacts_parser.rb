@@ -5,56 +5,59 @@ require "contacts_parser/version"
 
 module ContactsParser
   class Error < StandardError; end
-
-  # Displays usage statistics
-  def self.usage
-    puts "Usage: contacts_parser <filename> [options...]"
-    puts "  -o, --output    Ouput filename"
-
-    exit(1)
-  end
   
   class Parse
 
-    # Determines file options based on command line arguments
-    def initialize(args = [])
-      # Display usage details if no arguments are passed
-      ContactsParser.usage if args.length == 0
+    # Validates and stores arguments
+    def initialize(options = {})
+      # Abort if no input file is given
+      unless options[:input]
+        abort "Error: No input file specified"
+      end
 
-      # Get the CSV file to read
-      @in_file = args[0]
+      @options = options
+    end
 
-      # Set the output filename
-      if args[1] == "-o" && args[2]
-        @out_file = args[2]
-      else
-        @out_file = "#{@in_file}.json"
+    # Helpers for logging when verbose mode is enabled
+    def v_puts(msg)
+      puts msg if @options[:verbose]
+    end
+    def v_print(msg)
+      if @options[:verbose]
+        print msg
+        $stdout.flush
       end
     end
 
     # Main function
     def run
       # Get the raw data from the input file
-      puts "Reading file...\n\n"
-      raw_data = Files::read(@in_file)
+      v_puts "Reading file...\n\n"
+      raw_data = Files::read(@options[:input])
       
       # Format the data arrays
-      contacts = Formatter::contacts(raw_data[1..])
+      contacts = Formatter::contacts(raw_data[1..], @options)
 
       # Validate contacts
-      contacts, invalid = Validator::contacts(contacts)
+      contacts, invalid = Validator::contacts(contacts, @options)
 
       # Print validation results
-      puts "#{contacts.length} valid, #{invalid.length} invalid"
+      v_puts "#{contacts.length} valid, #{invalid.length} invalid"
 
       # Write data to file as JSON
-      puts "\nWriting valid contacts to #{@out_file}"
-      Files::write(@out_file, contacts)
+      v_puts "\nWriting valid contacts to #{@options[:output]}"
+      Files::write(@options[:output], contacts)
+
+      # Write invalid data to file as JSON
+      if @options[:invalid]
+        v_puts "\nWriting invalid contacts to #{@options[:invalid]}"
+        Files::write(@options[:invalid], invalid)
+      end
 
       # Display removed records
-      puts "\nThe following records were removed:"
+      v_puts "\nThe following records were removed:"
       invalid.each do |invalid|
-        puts "\t#{invalid[:license] && invalid[:license].length > 0 ? invalid[:license] : "(Missing) "} - #{invalid[:first_name]} #{invalid[:last_name]}"
+        v_puts "\t#{invalid[:license] && invalid[:license].length > 0 ? invalid[:license] : "(Missing) "} - #{invalid[:first_name]} #{invalid[:last_name]}"
       end
     end
   end
