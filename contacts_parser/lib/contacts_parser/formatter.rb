@@ -76,7 +76,7 @@ module ContactsParser
     def self.phone_format(number)
       number = number
         .gsub(/\D/, "") # Replace non-digits
-        .reverse[..9].reverse # Ignore country codes
+        .reverse[0..9].reverse # Ignore country codes
       
       # Format with parentheses and hyphen
       "(#{number[0..2]}) #{number[3..5]}-#{number[6..9]}"

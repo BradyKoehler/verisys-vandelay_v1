@@ -77,7 +77,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @contacts[..99].each do |contact| %>
+          <% @contacts[0..99].each do |contact| %>
           <% span = [1, contact[:addresses].length, contact[:phone_numbers].length].max %>
           <tr>
             <td rowspan=<%= span %>><%= contact[:license] %></td>
@@ -132,7 +132,7 @@
           </tr>
         </thead>
         <tbody>
-          <% @invalid[..99].each do |contact| %>
+          <% @invalid[0..99].each do |contact| %>
           <% span = [1, contact[:addresses].length, contact[:phone_numbers].length].max %>
           <tr>
             <td rowspan=<%= span %>><%= contact[:license] %></td>
@@ -160,11 +160,6 @@
 
   <div class="row tab-view" id=row-merges>
     <div class=col>
-      <% if @merges.length > 100 %>
-      <p>To prevent the browser from being overloaded, only the first 100 merges are shown.
-        <br />The JSON file (available on the downloads tab) will have the complete set.</p>
-      <% end %>
-
       <table class="table table-sm table-bordered table-responsive">
         <thead class="thead-dark">
           <tr>
